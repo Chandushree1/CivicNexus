@@ -1,4 +1,6 @@
+import { Navigation2 } from "lucide-react";
 import { StatusBadge, PriorityBadge } from "./Badges";
+import { getDirectionsUrl } from "../utils/maps";
 
 export default function ComplaintTable({ rows, navigate, base, onAccept, showAccept }) {
   return (
@@ -39,6 +41,18 @@ export default function ComplaintTable({ rows, navigate, base, onAccept, showAcc
                   <button onClick={() => navigate(`${base}/complaints/${c._id}`)} className="btn-secondary px-4 py-1.5 text-xs">
                     View
                   </button>
+                  {c.location?.lat && c.location?.lng && (
+                    <a
+                      href={getDirectionsUrl(c.location.lat, c.location.lng)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Get directions in Google Maps"
+                      className="btn-secondary px-3 py-1.5 text-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Navigation2 className="h-3.5 w-3.5" />
+                    </a>
+                  )}
                   {showAccept && !c.assignedOfficer && (
                     <button onClick={() => onAccept(c._id)} className="btn-primary px-4 py-1.5 text-xs">
                       Accept

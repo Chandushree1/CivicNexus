@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, CheckCircle2, Upload } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Upload, Navigation2 } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
 import { StatusBadge, PriorityBadge } from "../../components/Badges";
 import { CategoryIcon } from "../../components/categories";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
+import { getDirectionsUrl } from "../../utils/maps";
 
 const STATUS_OPTIONS = ["Under Review", "Assigned", "In Progress"];
 
@@ -82,10 +83,26 @@ export default function OfficerComplaintDetail() {
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900">{complaint.title}</h1>
           <p className="mt-2 text-slate-600">{complaint.description}</p>
-          <p className="mt-4 flex items-center gap-1.5 text-sm text-slate-500">
-            <MapPin className="h-4 w-4" /> {complaint.location?.address}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div>
+              <p className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                <MapPin className="h-4 w-4" /> {complaint.location?.address}
+              </p>
+              <p className="mt-1 text-xs text-slate-400">
+                GPS: {complaint.location?.lat}, {complaint.location?.lng}
+                {complaint.location?.ward && ` · ${complaint.location.ward}`}
+              </p>
+            </div>
+            <a
+              href={getDirectionsUrl(complaint.location.lat, complaint.location.lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary flex-shrink-0"
+            >
+              <Navigation2 className="h-4 w-4" /> Get directions
+            </a>
+          </div>
+          <p className="mt-3 text-sm text-slate-500">
             Citizen: {complaint.citizen?.fullName} · {complaint.citizen?.phone}
           </p>
 

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Navigation2 } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
 import { StatusBadge, PriorityBadge } from "../../components/Badges";
 import { CategoryIcon } from "../../components/categories";
 import api from "../../api/axios";
+import { getDirectionsUrl } from "../../utils/maps";
 
 export default function AdminComplaintDetail() {
   const { id } = useParams();
@@ -61,11 +62,21 @@ export default function AdminComplaintDetail() {
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900">{complaint.title}</h1>
           <p className="mt-2 text-slate-600">{complaint.description}</p>
-          <p className="mt-4 flex items-center gap-1.5 text-sm text-slate-500">
-            <MapPin className="h-4 w-4" /> {complaint.location?.address}
-            {complaint.location?.ward && ` · ${complaint.location.ward}`}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+              <MapPin className="h-4 w-4" /> {complaint.location?.address}
+              {complaint.location?.ward && ` · ${complaint.location.ward}`}
+            </p>
+            <a
+              href={getDirectionsUrl(complaint.location.lat, complaint.location.lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary flex-shrink-0"
+            >
+              <Navigation2 className="h-4 w-4" /> Get directions
+            </a>
+          </div>
+          <p className="mt-3 text-sm text-slate-500">
             Citizen: {complaint.citizen?.fullName} · {complaint.citizen?.email} · {complaint.citizen?.phone}
           </p>
 

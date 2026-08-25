@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { Navigation2 } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
 import MockMap from "../../components/MockMap";
 import { StatusBadge, PriorityBadge } from "../../components/Badges";
+import { getDirectionsUrl } from "../../utils/maps";
 import api from "../../api/axios";
 
 export default function MapView() {
@@ -34,9 +36,18 @@ export default function MapView() {
             <p className="mt-1 text-sm text-slate-500">
               {c.location?.address} · {c.distanceKm != null ? `${c.distanceKm.toFixed(1)} km away` : ""} · {c.location.lat}, {c.location.lng}
             </p>
+            <a
+              href={getDirectionsUrl(c.location.lat, c.location.lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary mt-3 inline-flex px-4 py-1.5 text-xs"
+            >
+              <Navigation2 className="h-3.5 w-3.5" /> Get directions
+            </a>
           </div>
         ))}
       </div>
     </DashboardLayout>
   );
 }
+
