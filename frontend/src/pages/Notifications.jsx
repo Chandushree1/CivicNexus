@@ -24,7 +24,7 @@ export default function Notifications() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
-  const base = user?.role === "officer" ? "/officer" : "/citizen";
+  const base = user?.role === "admin" ? "/admin" : user?.role === "officer" ? "/officer" : "/citizen";
 
   const load = () => api.get("/notifications").then(({ data }) => setNotifications(data.notifications));
 

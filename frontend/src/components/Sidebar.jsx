@@ -9,6 +9,9 @@ import {
   Users,
   Map,
   ShieldCheck,
+  UserCog,
+  BarChart3,
+  FolderKanban,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -29,10 +32,19 @@ const officerLinks = [
   { to: "/officer/profile", label: "Profile", icon: User },
 ];
 
+const adminLinks = [
+  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/complaints", label: "All Complaints", icon: FolderKanban },
+  { to: "/admin/officers", label: "Manage Officers", icon: UserCog },
+  { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/admin/notifications", label: "Notifications", icon: Bell },
+  { to: "/admin/profile", label: "Profile", icon: User },
+];
+
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const links = user?.role === "officer" ? officerLinks : citizenLinks;
+  const links = user?.role === "admin" ? adminLinks : user?.role === "officer" ? officerLinks : citizenLinks;
 
   const handleLogout = () => {
     logout();
@@ -75,7 +87,7 @@ export default function Sidebar() {
       <div>
         <div className="mb-3 border-t border-slate-200 pt-4">
           <p className="px-1 text-[11px] font-bold tracking-wide text-slate-400">
-            {user?.role === "officer" ? "MUNICIPAL OFFICER" : "CITIZEN ACCOUNT"}
+            {user?.role === "admin" ? "WARD ADMINISTRATOR" : user?.role === "officer" ? "MUNICIPAL OFFICER" : "CITIZEN ACCOUNT"}
           </p>
         </div>
         <button

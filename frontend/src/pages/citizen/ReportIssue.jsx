@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Upload, X, MapPin, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, X, MapPin, Loader2, LocateFixed, CheckCircle2, AlertTriangle } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
 import { CATEGORIES } from "../../components/categories";
 import { PriorityBadge, StatusBadge } from "../../components/Badges";
@@ -26,6 +26,10 @@ export default function ReportIssue() {
     lng: "",
   });
   const [files, setFiles] = useState([]);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const [accuracy, setAccuracy] = useState(null);
+  const [locationSource, setLocationSource] = useState(""); // "gps" | "manual"
 
   const update = (patch) => setForm((f) => ({ ...f, ...patch }));
 
@@ -36,19 +40,69 @@ export default function ReportIssue() {
 
   const removeFile = (idx) => setFiles((f) => f.filter((_, i) => i !== idx));
 
+  // Reverse-geocodes coordinates into a readable address using OpenStreetMap's free Nominatim API.
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+        { headers: { Accept: "application/json" } }
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data?.display_name || null;
+    } catch {
+      return null;
+    }
+  };
+
   const useMyLocation = () => {
-    if (!navigator.geolocation) return;
+    setLocationError("");
+
+    if (!("geolocation" in navigator)) {
+      setLocationError("Your browser doesn't support GPS location. Please enter the address manually.");
+      return;
+    }
+
+    setLocating(true);
+    setAccuracy(null);
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        update({
-          lat: pos.coords.latitude.toFixed(4),
-          lng: pos.coords.longitude.toFixed(4),
-          address: form.address || "Current device location",
-        });
+      async (pos) => {
+        const { latitude, longitude, accuracy: acc } = pos.coords;
+
+        // 6 decimal places ≈ 11cm precision — real device GPS accuracy, not a rounded placeholder
+        const lat = latitude.toFixed(6);
+        const lng = longitude.toFixed(6);
+
+        update({ lat, lng });
+        setAccuracy(Math.round(acc));
+        setLocationSource("gps");
+
+        const address = await reverseGeocode(latitude, longitude);
+        if (address) {
+          update({ lat, lng, address });
+        }
+        setLocating(false);
       },
-      () => {
-        // fall back to a Bengaluru default so the flow isn't blocked
-        update({ lat: "12.9352", lng: "77.6245" });
+      (err) => {
+        setLocating(false);
+        setAccuracy(null);
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocationError(
+            "Location access was denied. Enable location permission for this site in your browser settings, or enter the address and coordinates manually."
+          );
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          setLocationError("Your device couldn't determine a GPS fix. Try moving outdoors or enter the location manually.");
+        } else if (err.code === err.TIMEOUT) {
+          setLocationError("Getting your location took too long. Please try again, or enter it manually.");
+        } else {
+          setLocationError("Couldn't get your location. Please enter it manually.");
+        }
+      },
+      {
+        enableHighAccuracy: true, // forces GPS chip instead of coarse network/IP location
+        timeout: 15000,
+        maximumAge: 0, // never reuse a cached/stale fix
       }
     );
   };
@@ -188,9 +242,32 @@ export default function ReportIssue() {
 
         {step === 2 && (
           <div className="space-y-5">
-            <button type="button" onClick={useMyLocation} className="btn-secondary">
-              <MapPin className="h-4 w-4" /> Use my current location
-            </button>
+            <div>
+              <button type="button" onClick={useMyLocation} disabled={locating} className="btn-secondary">
+                {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
+                {locating ? "Getting your precise location..." : "Use my current location"}
+              </button>
+
+              {accuracy !== null && !locating && (
+                <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-green-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Location captured (±{accuracy}m accuracy)
+                </p>
+              )}
+
+              {locationError && (
+                <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <span>{locationError}</span>
+                </div>
+              )}
+
+              <p className="mt-2 text-xs text-slate-400">
+                Uses your device's GPS chip for accuracy — allow the location permission prompt when asked.
+                Works best outdoors or near a window; indoors it may take a few extra seconds.
+              </p>
+            </div>
+
             <div>
               <label className="label">Address</label>
               <textarea
@@ -199,15 +276,34 @@ export default function ReportIssue() {
                 onChange={(e) => update({ address: e.target.value })}
                 placeholder="Street, locality, landmark"
               />
+              {locationSource === "gps" && <p className="mt-1 text-xs text-slate-400">Auto-filled from GPS — edit if needed.</p>}
             </div>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
               <div>
                 <label className="label">Latitude</label>
-                <input className="input" value={form.lat} onChange={(e) => update({ lat: e.target.value })} placeholder="12.9352" />
+                <input
+                  className="input"
+                  value={form.lat}
+                  onChange={(e) => {
+                    setLocationSource("manual");
+                    setAccuracy(null);
+                    update({ lat: e.target.value });
+                  }}
+                  placeholder="12.935200"
+                />
               </div>
               <div>
                 <label className="label">Longitude</label>
-                <input className="input" value={form.lng} onChange={(e) => update({ lng: e.target.value })} placeholder="77.6245" />
+                <input
+                  className="input"
+                  value={form.lng}
+                  onChange={(e) => {
+                    setLocationSource("manual");
+                    setAccuracy(null);
+                    update({ lng: e.target.value });
+                  }}
+                  placeholder="77.624500"
+                />
               </div>
               <div>
                 <label className="label">Ward (optional)</label>
@@ -233,6 +329,7 @@ export default function ReportIssue() {
               </p>
               <p className="mt-1 text-xs text-slate-400">
                 {form.lat}, {form.lng}
+                {accuracy !== null && locationSource === "gps" && ` · GPS accuracy ±${accuracy}m`}
               </p>
               {files.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-3">

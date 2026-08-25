@@ -11,7 +11,8 @@ export default function ProtectedRoute({ children, role }) {
 
   const allowedRoles = role ? (Array.isArray(role) ? role : [role]) : ["citizen", "officer", "admin"];
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to={user.role === "citizen" ? "/citizen/dashboard" : "/officer/dashboard"} replace />;
+    const homeByRole = { citizen: "/citizen/dashboard", officer: "/officer/dashboard", admin: "/admin/dashboard" };
+    return <Navigate to={homeByRole[user.role] || "/login"} replace />;
   }
   return children;
 }

@@ -9,7 +9,7 @@ export default function Topbar() {
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
   const [search, setSearch] = useState("");
-  const base = user?.role === "officer" ? "/officer" : "/citizen";
+  const base = user?.role === "admin" ? "/admin" : user?.role === "officer" ? "/officer" : "/citizen";
 
   useEffect(() => {
     let mounted = true;

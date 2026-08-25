@@ -33,6 +33,8 @@ const userSchema = new mongoose.Schema(
       lat: { type: Number },
       lng: { type: Number },
     },
+    isActive: { type: Boolean, default: true },
+    createdByAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true }
 );

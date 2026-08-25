@@ -19,6 +19,12 @@ import NearbyIssues from "./pages/officer/NearbyIssues";
 import MapView from "./pages/officer/MapView";
 import OfficerComplaintDetail from "./pages/officer/ComplaintDetail";
 
+import AdminDashboard from "./pages/admin/Dashboard";
+import AllComplaints from "./pages/admin/AllComplaints";
+import AdminComplaintDetail from "./pages/admin/ComplaintDetail";
+import ManageOfficers from "./pages/admin/ManageOfficers";
+import Analytics from "./pages/admin/Analytics";
+
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 
@@ -87,7 +93,7 @@ export default function App() {
       <Route
         path="/officer/dashboard"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
             <OfficerDashboard />
           </ProtectedRoute>
         }
@@ -95,7 +101,7 @@ export default function App() {
       <Route
         path="/officer/assigned"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
             <AssignedComplaints />
           </ProtectedRoute>
         }
@@ -103,7 +109,7 @@ export default function App() {
       <Route
         path="/officer/nearby"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
             <NearbyIssues />
           </ProtectedRoute>
         }
@@ -111,7 +117,7 @@ export default function App() {
       <Route
         path="/officer/map"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
             <MapView />
           </ProtectedRoute>
         }
@@ -119,7 +125,7 @@ export default function App() {
       <Route
         path="/officer/complaints/:id"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
             <OfficerComplaintDetail />
           </ProtectedRoute>
         }
@@ -127,7 +133,7 @@ export default function App() {
       <Route
         path="/officer/notifications"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
             <Notifications />
           </ProtectedRoute>
         }
@@ -135,7 +141,65 @@ export default function App() {
       <Route
         path="/officer/profile"
         element={
-          <ProtectedRoute role={["officer", "admin"]}>
+          <ProtectedRoute role="officer">
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/complaints"
+        element={
+          <ProtectedRoute role="admin">
+            <AllComplaints />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/complaints/:id"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminComplaintDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/officers"
+        element={
+          <ProtectedRoute role="admin">
+            <ManageOfficers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/analytics"
+        element={
+          <ProtectedRoute role="admin">
+            <Analytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/notifications"
+        element={
+          <ProtectedRoute role="admin">
+            <Notifications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/profile"
+        element={
+          <ProtectedRoute role="admin">
             <Profile />
           </ProtectedRoute>
         }

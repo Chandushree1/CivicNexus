@@ -248,6 +248,9 @@ const run = async () => {
   console.log("  Citizen -> ananya.sharma@gmail.com / password123");
   console.log("  Officer -> ramesh.iyer@civicconnect.gov.in / password123");
   console.log("  Admin   -> admin@civicconnect.gov.in / password123");
+  console.log("\nAdmin dashboard covers: overview stats, all-complaints oversight with officer");
+  console.log("reassignment, officer management (create/edit/deactivate/remove), and ward +");
+  console.log("category analytics — all under /admin/* routes, separate from the officer views.");
 
   await mongoose.disconnect();
   process.exit(0);

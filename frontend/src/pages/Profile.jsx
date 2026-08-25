@@ -19,7 +19,12 @@ export default function Profile() {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    const endpoint = user?.role === "officer" ? "/complaints/stats/officer" : "/complaints/stats/citizen";
+    const endpoint =
+      user?.role === "admin"
+        ? "/admin/overview"
+        : user?.role === "officer"
+        ? "/complaints/stats/officer"
+        : "/complaints/stats/citizen";
     api.get(endpoint).then(({ data }) => setStats(data.stats));
   }, [user?.role]);
 
@@ -157,7 +162,13 @@ export default function Profile() {
 
       {stats && (
         <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-3">
-          {user?.role === "officer" ? (
+          {user?.role === "admin" ? (
+            <>
+              <StatBox label="Total complaints" value={stats.totalComplaints} icon={ClipboardList} />
+              <StatBox label="Resolution rate" value={`${stats.resolutionRate}%`} icon={CheckCircle2} />
+              <StatBox label="Overdue" value={stats.overdue} icon={Clock} />
+            </>
+          ) : user?.role === "officer" ? (
             <>
               <StatBox label="Assigned" value={stats.assigned} icon={ClipboardList} />
               <StatBox label="Resolved" value={stats.resolved} icon={CheckCircle2} />
