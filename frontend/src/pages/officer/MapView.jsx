@@ -39,6 +39,7 @@ export default function MapView() {
             <a
               href={getDirectionsUrl(c.location.lat, c.location.lng)}
               target="_blank"
+              
               rel="noopener noreferrer"
               className="btn-secondary mt-3 inline-flex px-4 py-1.5 text-xs"
             >
