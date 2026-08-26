@@ -65,93 +65,180 @@ const run = async () => {
 
   console.log("Creating demo complaints...");
   const complaintDefs = [
-    {
-      complaintId: "CC-2026-001245",
-      category: "Garbage",
-      title: "Garbage not collected for 6 days near 5th Block park",
-      description: "Waste has piled up near the park entrance and is attracting stray animals.",
-      priority: "High",
-      status: "In Progress",
-      location: { address: "5th Block, Koramangala, near Jyoti Nivas College", lat: 12.9352, lng: 77.6245, ward: "Ward 84" },
-      assignedOfficer: otherOfficers[0]._id,
-      daysAgo: 20,
+  {
+    complaintId: "CC-2026-001245",
+    category: "Garbage",
+    title: "Garbage not collected for 6 days near 5th Block park",
+    description:
+      "Waste has piled up near the park entrance and is attracting stray animals.",
+    priority: {
+      level: "High",
+      score: 3,
+      baseScore: 3,
     },
-    {
-      complaintId: "CC-2026-001246",
-      category: "Roads & Potholes",
-      title: "Deep pothole causing two-wheeler skids on 80 Feet Road",
-      description: "A large pothole has formed after recent rains, causing accidents.",
-      priority: "Urgent",
-      status: "Resolved",
-      location: { address: "80 Feet Road, 4th Block, Koramangala", lat: 12.9345, lng: 77.6230, ward: "Ward 84" },
-      assignedOfficer: officer._id,
-      resolved: true,
-      rating: 5,
-      daysAgo: 31,
+    status: "In Progress",
+    location: {
+      address: "5th Block, Koramangala, near Jyoti Nivas College",
+      lat: 12.9352,
+      lng: 77.6245,
+      ward: "Ward 84",
     },
-    {
-      complaintId: "CC-2026-001247",
-      category: "Streetlights",
-      title: "Streetlight pole dark for two weeks on 12th Main",
-      description: "The pole outside house no. 45 has not worked for two weeks.",
-      priority: "High",
-      status: "Assigned",
-      location: { address: "12th Main, HSR Layout Sector 6", lat: 12.9121, lng: 77.6446, ward: "Ward 78" },
-      assignedOfficer: otherOfficers[1]._id,
-      daysAgo: 18,
+    assignedOfficer: otherOfficers[0]._id,
+    daysAgo: 20,
+  },
+
+  {
+    complaintId: "CC-2026-001246",
+    category: "Roads & Potholes",
+    title: "Deep pothole causing two-wheeler skids on 80 Feet Road",
+    description:
+      "A large pothole has formed after recent rains, causing accidents.",
+    priority: {
+      level: "Critical",
+      score: 4,
+      baseScore: 4,
     },
-    {
-      complaintId: "CC-2026-001248",
-      category: "Drainage",
-      title: "Drain overflowing onto footpath near bus stop",
-      description: "Stagnant water on the footpath is a health hazard for commuters.",
-      priority: "Urgent",
-      status: "Under Review",
-      location: { address: "Bellandur Gate, Outer Ring Road", lat: 12.9256, lng: 77.6784, ward: "Ward 78" },
-      daysAgo: 15,
+    status: "Resolved",
+    location: {
+      address: "80 Feet Road, 4th Block, Koramangala",
+      lat: 12.9345,
+      lng: 77.623,
+      ward: "Ward 84",
     },
-    {
-      complaintId: "CC-2026-001249",
-      category: "Public Facilities",
-      title: "Public toilet at market has no water supply",
-      description: "The community toilet has had no running water for over a week.",
-      priority: "Medium",
-      status: "Submitted",
-      location: { address: "Jayanagar 4th Block Market", lat: 12.9257, lng: 77.5834, ward: "Ward 91" },
-      daysAgo: 14,
+    assignedOfficer: officer._id,
+    resolved: true,
+    rating: 5,
+    daysAgo: 31,
+  },
+
+  {
+    complaintId: "CC-2026-001247",
+    category: "Streetlights",
+    title: "Streetlight pole dark for two weeks on 12th Main",
+    description:
+      "The pole outside house no. 45 has not worked for two weeks.",
+    priority: {
+      level: "High",
+      score: 3,
+      baseScore: 3,
     },
-    {
-      complaintId: "CC-2026-001250",
-      category: "Water Supply",
-      title: "Water pipeline leaking for a week on 7th Cross",
-      description: "A burst pipeline is wasting a large amount of water daily.",
-      priority: "High",
-      status: "In Progress",
-      location: { address: "7th Cross, Jayanagar 4th Block", lat: 12.9279, lng: 77.5825, ward: "Ward 91" },
-      daysAgo: 22,
+    status: "Assigned",
+    location: {
+      address: "12th Main, HSR Layout Sector 6",
+      lat: 12.9121,
+      lng: 77.6446,
+      ward: "Ward 78",
     },
-    {
-      complaintId: "CC-2026-001252",
-      category: "Electricity",
-      title: "Hanging electric wires above footpath",
-      description: "Live wires are hanging dangerously low near a school route.",
-      priority: "Urgent",
-      status: "Assigned",
-      location: { address: "Sarjapur Main Road, HSR Layout", lat: 12.9101, lng: 77.6501, ward: "Ward 78" },
-      assignedOfficer: otherOfficers[1]._id,
-      daysAgo: 16,
+    assignedOfficer: otherOfficers[1]._id,
+    daysAgo: 18,
+  },
+
+  {
+    complaintId: "CC-2026-001248",
+    category: "Drainage",
+    title: "Drain overflowing onto footpath near bus stop",
+    description:
+      "Stagnant water on the footpath is a health hazard for commuters.",
+    priority: {
+      level: "Critical",
+      score: 4,
+      baseScore: 4,
     },
-    {
-      complaintId: "CC-2026-001254",
-      category: "Drainage",
-      title: "Open manhole cover missing near school gate",
-      description: "A missing manhole cover poses a serious risk to children.",
-      priority: "Urgent",
-      status: "In Progress",
-      location: { address: "Bellandur Main Road, near Vidya Niketan School", lat: 12.9241, lng: 77.6798, ward: "Ward 78" },
-      daysAgo: 7,
+    status: "Under Review",
+    location: {
+      address: "Bellandur Gate, Outer Ring Road",
+      lat: 12.9256,
+      lng: 77.6784,
+      ward: "Ward 78",
     },
-  ];
+    daysAgo: 15,
+  },
+
+  {
+    complaintId: "CC-2026-001249",
+    category: "Public Facilities",
+    title: "Public toilet at market has no water supply",
+    description:
+      "The community toilet has had no running water for over a week.",
+    priority: {
+      level: "Medium",
+      score: 2,
+      baseScore: 2,
+    },
+    status: "Submitted",
+    location: {
+      address: "Jayanagar 4th Block Market",
+      lat: 12.9257,
+      lng: 77.5834,
+      ward: "Ward 91",
+    },
+    daysAgo: 14,
+  },
+
+  {
+    complaintId: "CC-2026-001250",
+    category: "Water Supply",
+    title: "Water pipeline leaking for a week on 7th Cross",
+    description:
+      "A burst pipeline is wasting a large amount of water daily.",
+    priority: {
+      level: "High",
+      score: 3,
+      baseScore: 3,
+    },
+    status: "In Progress",
+    location: {
+      address: "7th Cross, Jayanagar 4th Block",
+      lat: 12.9279,
+      lng: 77.5825,
+      ward: "Ward 91",
+    },
+    daysAgo: 22,
+  },
+
+  {
+    complaintId: "CC-2026-001252",
+    category: "Electricity",
+    title: "Hanging electric wires above footpath",
+    description:
+      "Live wires are hanging dangerously low near a school route.",
+    priority: {
+      level: "Critical",
+      score: 4,
+      baseScore: 4,
+    },
+    status: "Assigned",
+    location: {
+      address: "Sarjapur Main Road, HSR Layout",
+      lat: 12.9101,
+      lng: 77.6501,
+      ward: "Ward 78",
+    },
+    assignedOfficer: otherOfficers[1]._id,
+    daysAgo: 16,
+  },
+
+  {
+    complaintId: "CC-2026-001254",
+    category: "Drainage",
+    title: "Open manhole cover missing near school gate",
+    description:
+      "A missing manhole cover poses a serious risk to children.",
+    priority: {
+      level: "Critical",
+      score: 4,
+      baseScore: 4,
+    },
+    status: "In Progress",
+    location: {
+      address: "Bellandur Main Road, near Vidya Niketan School",
+      lat: 12.9241,
+      lng: 77.6798,
+      ward: "Ward 78",
+    },
+    daysAgo: 7,
+  },
+];
 
   const createdComplaints = [];
   for (const def of complaintDefs) {

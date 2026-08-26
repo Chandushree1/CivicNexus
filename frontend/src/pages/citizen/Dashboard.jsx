@@ -40,11 +40,12 @@ export default function CitizenDashboard() {
   const [complaints, setComplaints] = useState([]);
 
   useEffect(() => {
-    api.get("/complaints/stats/citizen").then(({ data }) => setStats(data.stats));
+    api.get("/complaints/stats/citizen").then(({ data }) => setStats(data.stats));    
     api.get("/complaints/mine").then(({ data }) => setComplaints(data.complaints));
   }, []);
 
   const active = complaints.filter((c) => c.status !== "Resolved").slice(0, 3);
+  const resolvedComplaints = complaints.filter((c) => c.status === "Resolved").slice(0,3)
   const recent = complaints.slice(0, 5);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -74,6 +75,15 @@ export default function CitizenDashboard() {
         <div className="card mb-8">
           <h2 className="mb-2 text-xl font-bold text-slate-900">Active complaint progress</h2>
           {active.map((c) => (
+            <ProgressRow key={c._id} complaint={c} />
+          ))}
+        </div>
+      )}
+
+      {resolvedComplaints.length > 0 && (
+        <div className="card mb-8">
+          <h2 className="mb-2 text-xl font-bold text-slate-900">Resolved complaints</h2>
+          {resolvedComplaints.map((c) => (
             <ProgressRow key={c._id} complaint={c} />
           ))}
         </div>

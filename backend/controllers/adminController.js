@@ -94,10 +94,8 @@ exports.reassignComplaint = async (req, res) => {
     const { officerId } = req.body;
     const officer = await User.findOne({ _id: officerId, role: "officer" });
     if (!officer) return res.status(404).json({ message: "Officer not found" });
-
     const complaint = await Complaint.findById(req.params.id);
     if (!complaint) return res.status(404).json({ message: "Complaint not found" });
-
     complaint.assignedOfficer = officer._id;
     if (complaint.status === "Submitted" || complaint.status === "Under Review") {
       complaint.status = "Assigned";
@@ -107,7 +105,18 @@ exports.reassignComplaint = async (req, res) => {
       note: `Reassigned to ${officer.fullName} (${officer.designation || "Officer"}) by admin`,
       actor: req.user._id,
     });
-    await complaint.save();
+    try {
+      await complaint.save();
+      console.log("✅ Complaint saved successfully");
+    } catch (error) {
+      console.error("❌ Complaint save failed:", error);
+      throw error;
+    }   
+
+    const verifyComplaint = await Complaint.findById(req.params.id);
+
+console.log("From DB:", verifyComplaint);
+console.log("Assigned officer from DB:", verifyComplaint.assignedOfficer);
 
     await Notification.create({
       user: complaint.citizen,
