@@ -32,5 +32,19 @@ export function StatusBadge({ status }) {
 }
 
 export function PriorityBadge({ priority }) {
-  return <span className={`badge ${priorityStyles[priority] || "bg-slate-100 text-slate-600"}`}>{priority}</span>;
+  const level =
+    typeof priority === "object"
+      ? priority?.level
+      : priority;
+
+  return (
+    <span
+      className={`badge ${
+        priorityStyles[level] ||
+        "bg-slate-100 text-slate-600"
+      }`}
+    >
+      {level || "Unknown"}
+    </span>
+  );
 }

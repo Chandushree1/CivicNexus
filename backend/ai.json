@@ -1,0 +1,8 @@
+{
+  "issueType": "small_pothole",
+  "severity": "low",
+  "confidence": 0.95,
+  "hazards": [],
+  "suggestedCategory": "Roads & Potholes",
+  "categoryMismatch": false
+}
