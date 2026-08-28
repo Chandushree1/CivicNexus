@@ -5,6 +5,10 @@ const generateComplaintId = require("../utils/generateComplaintId");
 const Issue = require("../models/Issue");
 const fs = require("fs");
 const path = require("path");
+const {
+  sendSMS,
+  sendWhatsApp,
+} = require("../services/messageService");
 
 const {
   processIssue,
@@ -152,7 +156,6 @@ exports.createComplaint = async (req, res) => {
       })
     );
 
-
     // -----------------------------------------------
     // TEMPORARY AI INPUT
     // -----------------------------------------------
@@ -194,8 +197,7 @@ exports.createComplaint = async (req, res) => {
     // 4. Recalculate priority
     // -----------------------------------------------
 
-    const issueResult =
-  await processIssue({
+    const issueResult =  await processIssue({
     category,
 
     issueType:
@@ -216,6 +218,7 @@ exports.createComplaint = async (req, res) => {
 
     radiusMeters: 50,
   });
+
 
 
     const issue =
@@ -324,6 +327,7 @@ if (existingCitizenReport) {
     // -----------------------------------------------
     // Create individual citizen complaint
     // -----------------------------------------------
+
 
     const complaint =
       await Complaint.create({
@@ -710,8 +714,7 @@ exports.getNearbyIssues = async (
 // Officer
 // =====================================================
 
-exports.getAssignedComplaints =
-  async (req, res) => {
+exports.getAssignedComplaints =  async (req, res) => {
     try {
       const complaints =
         await Complaint.find({
@@ -743,8 +746,7 @@ exports.getAssignedComplaints =
 // Officer
 // =====================================================
 
-exports.getMapComplaints =
-  async (req, res) => {
+exports.getMapComplaints =  async (req, res) => {
     try {
       const complaints =
         await Complaint.find({
@@ -788,8 +790,8 @@ exports.getMapComplaints =
 // PATCH /api/complaints/:id/accept
 // =====================================================
 
-exports.acceptComplaint =
-  async (req, res) => {
+exports.acceptComplaint = async (req, res) => {
+  console.log("accepted")
     try {
       const complaint =
         await Complaint.findById(
@@ -833,6 +835,23 @@ exports.acceptComplaint =
         complaint._id
       );
 
+      
+      const message =
+      `*CivicConnect*\n\n` +
+      `Your complaint *${complaint.complaintId}* has been accepted by an officer. ✅\n\n` +
+      `👨‍💼 Officer: *${req.user.fullName}*\n` +
+      `💼 Designation: *${req.user.designation || "Officer"}*\n\n` +
+      `Your complaint is now being handled by the assigned officer.\n\n` +
+      `🔗 *Open CivicConnect:*\n` +
+      `https://civic-nexus-lemon.vercel.app/\n\n` +
+      `Thank you for using CivicConnect. ❤️`;
+
+      console.log(message)
+      
+      // await sendSMS(complaint.citizen.phone, message)
+      // await sendWhatsApp(complaint.citizen.phone, message)
+      console.log("sms sent")
+
       res.json({
         complaint,
       });
@@ -849,8 +868,7 @@ exports.acceptComplaint =
 // PATCH /api/complaints/:id/status
 // =====================================================
 
-exports.updateStatus =
-  async (req, res) => {
+exports.updateStatus =  async (req, res) => {
     try {
       const {
         status,
@@ -906,6 +924,17 @@ exports.updateStatus =
         complaint._id
       );
 
+      const message =
+  `CivicConnect: Your complaint ${complaint.complaintId} - ` +
+  `${complaint.title} status has been updated to "${complaint.status}".` +
+  (note ? `\nNote: ${note}` : "") +
+  `\n\nView your complaint:\n${CIVICCONNECT_URL}`;
+
+      console.log(message)
+      
+      // await sendSMS(complaint.citizen.phone, message)
+      // await sendWhatsApp(complaint.citizen.phone, message)
+      console.log("sms sent")
       res.json({
         complaint,
       });
@@ -982,6 +1011,16 @@ exports.resolveComplaint =
         complaint._id
       );
 
+     const message =
+  `CivicConnect: Your complaint ${complaint.complaintId} - ` +
+  `${complaint.title} has been resolved.\n\n` +
+  `Please open CivicConnect to rate the resolution:\n` +
+  `${CIVICCONNECT_URL}`;
+
+
+      // await sendSMS(complaint.citizen.phone, message)
+      // await sendWhatsApp(complaint.citizen.phone, message)
+      console.log("sms sent")
       res.json({
         complaint,
       });

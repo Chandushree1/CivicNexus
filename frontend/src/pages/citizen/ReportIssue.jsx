@@ -118,7 +118,6 @@ export default function ReportIssue() {
       files.forEach((f) =>
         fd.append("photos", f)
       );
-
       const { data } = await api.post(
         "/complaints",
         fd,
@@ -129,7 +128,6 @@ export default function ReportIssue() {
           },
         }
       );
-
       navigate(
         `/citizen/complaints/${data.complaint._id}`
       );

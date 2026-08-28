@@ -1,6 +1,10 @@
 const User = require("../models/User");
 const Complaint = require("../models/Complaint");
 const Notification = require("../models/Notification");
+const {
+  sendSMS,
+  sendWhatsApp,
+} = require("../services/messageService");
 
 // @route GET /api/admin/overview
 exports.getOverview = async (req, res) => {
@@ -115,8 +119,6 @@ exports.reassignComplaint = async (req, res) => {
 
     const verifyComplaint = await Complaint.findById(req.params.id);
 
-console.log("From DB:", verifyComplaint);
-console.log("Assigned officer from DB:", verifyComplaint.assignedOfficer);
 
     await Notification.create({
       user: complaint.citizen,
@@ -125,6 +127,38 @@ console.log("Assigned officer from DB:", verifyComplaint.assignedOfficer);
       message: `${officer.fullName} (${officer.designation || "Officer"}) is now handling ${complaint.complaintId}.`,
       complaint: complaint._id,
     });
+    
+    const citizen = await User.findOne({ _id: complaint.citizen, role: "citizen" })
+
+     const whatsappMessage =
+      `CivicConnect\n\n` +
+
+      `Your complaint ${complaint.complaintId}` +
+      `has been reassigned to an officer.\n\n` +
+
+      `Officer: ${officer.fullName}\n` +
+
+      `Designation:${
+        officer.designation || "Officer"
+      }\n\n` +
+
+      `Your complaint is now being handled ` +
+      `by the assigned officer.\n\n` +
+
+      `Open CivicConnect:\n` +
+
+      `https://civic-nexus-lemon.vercel.app/\n\n` +
+
+      `Thank you for using CivicConnect.`;
+
+
+    // -----------------------------------------
+    // Send WhatsApp
+    // -----------------------------------------
+
+    await sendWhatsApp(citizen.phone, complaint.complaintId, officer.fullName, officer.designation)
+    // await sendSMS(citizen.phone, whatsappMessage)
+    
 
     res.json({ complaint });
   } catch (err) {
